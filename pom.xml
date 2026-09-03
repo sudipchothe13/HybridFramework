@@ -291,6 +291,22 @@
 
 	<build>
 		<plugins>
+		
+		<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <version>3.3.0</version>
+
+    <configuration>
+
+        <testFailureIgnore>false</testFailureIgnore>
+
+        <includes>
+            <include>**/MainRunner.java</include>
+        </includes>
+
+    </configuration>
+</plugin>
 
 			<!-- Clean -->
 			<plugin>
@@ -314,15 +330,6 @@
 				</configuration>
 			</plugin>
 
-			<!-- Surefire -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.3.0</version>
-				<configuration>
-					<testFailureIgnore>false</testFailureIgnore>
-				</configuration>
-			</plugin>
 
 			<!-- Jar -->
 			<plugin>
