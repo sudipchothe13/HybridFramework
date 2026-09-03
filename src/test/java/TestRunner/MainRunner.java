@@ -21,14 +21,11 @@ import io.cucumber.testng.CucumberOptions;
 
 @CucumberOptions(
     features = "src/test/resources/features",
-
     glue = {
         "stepDefinitions",
         "HooksGUI"
     },
-
     tags = "@UI",
-
     plugin = {
         "pretty",
         "summary",
@@ -59,7 +56,8 @@ public class MainRunner
             @Optional("") String browser) {
 
         // =================================================
-        // GET BROWSER FROM JENKINS / SYSTEM PROPERTY
+        // GET BROWSER FROM TESTNG PARAMETER
+        // OR JENKINS SYSTEM PROPERTY
         // =================================================
 
         if (browser == null || browser.isEmpty()) {
@@ -160,6 +158,7 @@ public class MainRunner
             File logDir) {
 
         String[] logFiles = {
+
                 "Chrome.log",
                 "Firefox.log",
                 "Edge.log",
@@ -205,4 +204,3 @@ public class MainRunner
         ).setLevel(Level.OFF);
     }
 }
-
