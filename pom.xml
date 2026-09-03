@@ -221,7 +221,6 @@
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<version>7.10.2</version>
-			<scope>test</scope>
 		</dependency>
 		<!--  https://mvnrepository.com/artifact/io.cucumber/cucumber-java  -->
 		<dependency>
@@ -259,11 +258,6 @@
 		</dependency>
 
 
-		<dependency>
-			<groupId>io.cucumber</groupId>
-			<artifactId>cucumber-junit</artifactId>
-			<version>6.11.0</version>
-		</dependency>
 
 
 		<!--
