@@ -15,176 +15,356 @@ import io.cucumber.java.Scenario;
 
 public class UIHooks {
 
-    private static ThreadLocal<Scenario> scenarioThreadLocal =
-            new ThreadLocal<>();
 
-    // =====================================================
-    // GET CURRENT SCENARIO
-    // =====================================================
+private static ThreadLocal<Scenario> scenarioThreadLocal =
+        new ThreadLocal<>();
 
-    public static Scenario getScenario() {
+// =====================================================
+// GET CURRENT SCENARIO
+// =====================================================
 
-        return scenarioThreadLocal.get();
-    }
+public static Scenario getScenario() {
 
-    // =====================================================
-    // BEFORE SCENARIO
-    // =====================================================
+    return scenarioThreadLocal.get();
+}
 
-    @Before(order = 1)
-    public void beforeScenario(Scenario scenario) {
+// =====================================================
+// BEFORE SCENARIO
+// =====================================================
 
-        // -------------------------------------------------
-        // Browser is already set by TestNG Runner
-        // -------------------------------------------------
+@Before(order = 1)
+public void beforeScenario(Scenario scenario) {
 
-        String browser = BaseClass.getBrowser();
+    // -------------------------------------------------
+    // Browser is already set by TestNG Runner
+    // -------------------------------------------------
 
-        // -------------------------------------------------
-        // Initialize WebDriver
-        // -------------------------------------------------
+    String browser = BaseClass.getBrowser();
 
-        WebDriver driver =
-                DriverFactory.initDriver(browser);
+    // -------------------------------------------------
+    // Initialize WebDriver
+    // -------------------------------------------------
 
-        BaseClass.setDriver(driver);
+    WebDriver driver =
+            DriverFactory.initDriver(browser);
 
-        // -------------------------------------------------
-        // Store Scenario in current Thread
-        // -------------------------------------------------
+    BaseClass.setDriver(driver);
 
-        scenarioThreadLocal.set(scenario);
+    // -------------------------------------------------
+    // Store Scenario in current Thread
+    // -------------------------------------------------
 
-        // =================================================
-        // WORD LOGGER
-        // =================================================
+    scenarioThreadLocal.set(scenario);
 
-        WordLogger.startScenario(
-                scenario.getName(),
-                browser
-        );
+    // =================================================
+    // WORD LOGGER
+    // =================================================
 
-        // =================================================
-        // EXTENT REPORT
-        // =================================================
-        //
-        // IMPORTANT:
-        // This creates/uses a separate Extent report
-        // for Chrome / Edge / Firefox.
-        //
-        // Example:
-        //
-        // Chrome  -> Chrome_SparkReport.html
-        // Edge    -> Edge_SparkReport.html
-        // Firefox -> Firefox_SparkReport.html
-        //
-        // =================================================
+    WordLogger.startScenario(
+            scenario.getName(),
+            browser
+    );
 
-        ExtentManager.createTest(
-                scenario.getName(),
-                browser
-        );
+    // =================================================
+    // EXTENT REPORT
+    // =================================================
 
-        // =================================================
-        // BROWSER LAUNCH SCREENSHOT
-        // =================================================
+    ExtentManager.createTest(
+            scenario.getName(),
+            browser
+    );
+
+    // =================================================
+    // BROWSER LAUNCH SCREENSHOT
+    // =================================================
+
+    ScreenshotUtils.capture(
+            driver,
+            "🖥️ Browser launched successfully: "
+            + browser.toUpperCase()
+    );
+
+    // =================================================
+    // START LOG
+    // =================================================
+
+    Log.info(
+            "========== UI Scenario START =========="
+    );
+
+    Log.info(
+            "Scenario : "
+            + scenario.getName()
+    );
+
+    Log.info(
+            "Browser  : "
+            + browser.toUpperCase()
+    );
+
+    Log.info(
+            "======================================="
+    );
+}
+
+// =====================================================
+// AFTER SCENARIO
+// =====================================================
+
+@After(order = 2)
+public void afterScenario(Scenario scenario) {
+
+    WebDriver driver =
+            BaseClass.getDriver();
+
+    // =================================================
+    // FINAL SCREENSHOT
+    // =================================================
+
+    if (driver != null) {
 
         ScreenshotUtils.capture(
                 driver,
-                "🖥️ Browser launched successfully: "
-                + browser.toUpperCase()
+                scenario.isFailed()
+                        ? "Scenario FAILED"
+                        : "Scenario PASSED"
         );
 
         // =================================================
-        // START LOG
+        // QUIT DRIVER
         // =================================================
 
-        Log.info(
-                "========== UI Scenario START =========="
-        );
-
-        Log.info(
-                "Scenario : "
-                + scenario.getName()
-        );
-
-        Log.info(
-                "Browser  : "
-                + browser.toUpperCase()
-        );
-
-        Log.info(
-                "======================================="
-        );
+        driver.quit();
     }
 
-    // =====================================================
-    // AFTER SCENARIO
-    // =====================================================
+    // =================================================
+    // END LOG
+    // =================================================
 
-    @After(order = 1)
-    public void afterScenario(Scenario scenario) {
+    Log.info(
+            "========== UI Scenario END =========="
+    );
 
-        WebDriver driver =
-                BaseClass.getDriver();
+    // =================================================
+    // WORD REPORT
+    // =================================================
 
-        // =================================================
-        // FINAL SCREENSHOT
-        // =================================================
+    WordLogger.endScenario();
 
-        if (driver != null) {
+    // =================================================
+    // DRIVER CLEANUP
+    // =================================================
 
-            ScreenshotUtils.capture(
-                    driver,
-                    scenario.isFailed()
-                            ? "Scenario FAILED"
-                            : "Scenario PASSED"
-            );
+    BaseClass.unloadDriver();
 
-            // =================================================
-            // QUIT DRIVER
-            // =================================================
-
-            driver.quit();
-        }
-
-        // =================================================
-        // END LOG
-        // =================================================
-
-        Log.info(
-                "========== UI Scenario END =========="
-        );
-
-        // =================================================
-        // WORD REPORT
-        // =================================================
-
-        WordLogger.endScenario();
-
-        // =================================================
-        // DRIVER CLEANUP
-        // =================================================
-
-        BaseClass.unloadDriver();
-
-        BaseClass.unloadBrowser();
-    }
-
-    // =====================================================
-    // CLEAR THREAD LOCALS
-    // =====================================================
-
-    @After(order = 0)
-    public void afterScenarioClear() {
-
-        // Remove Scenario ThreadLocal
-        scenarioThreadLocal.remove();
-
-        // Remove ExtentTest ThreadLocal
-        ExtentManager.removeTest();
-    }
+    BaseClass.unloadBrowser();
 }
+
+// =====================================================
+// CLEAR THREAD LOCALS
+// =====================================================
+
+@After(order = 1)
+public void afterScenarioClear() {
+
+    // Remove Scenario ThreadLocal
+    scenarioThreadLocal.remove();
+
+    // Remove ExtentTest ThreadLocal
+    ExtentManager.removeTest();
+}
+
+
+}
+
+//---------------------
+//package HooksGUI;
+//
+//import org.openqa.selenium.WebDriver;
+//
+//import BaseLayer.BaseClass;
+//import CommonLayer.DriverFactory;
+//import CommonLayer.ExtentManager;
+//import CommonLayer.WordLogger;
+//import CommonLayer.ScreenshotUtils;
+//import UtilsLayer.Log;
+//
+//import io.cucumber.java.After;
+//import io.cucumber.java.Before;
+//import io.cucumber.java.Scenario;
+//
+//public class UIHooks {
+//
+//    private static ThreadLocal<Scenario> scenarioThreadLocal =
+//            new ThreadLocal<>();
+//
+//    // =====================================================
+//    // GET CURRENT SCENARIO
+//    // =====================================================
+//
+//    public static Scenario getScenario() {
+//
+//        return scenarioThreadLocal.get();
+//    }
+//
+//    // =====================================================
+//    // BEFORE SCENARIO
+//    // =====================================================
+//
+//    @Before(order = 1)
+//    public void beforeScenario(Scenario scenario) {
+//
+//        // -------------------------------------------------
+//        // Browser is already set by TestNG Runner
+//        // -------------------------------------------------
+//
+//        String browser = BaseClass.getBrowser();
+//
+//        // -------------------------------------------------
+//        // Initialize WebDriver
+//        // -------------------------------------------------
+//
+//        WebDriver driver =
+//                DriverFactory.initDriver(browser);
+//
+//        BaseClass.setDriver(driver);
+//
+//        // -------------------------------------------------
+//        // Store Scenario in current Thread
+//        // -------------------------------------------------
+//
+//        scenarioThreadLocal.set(scenario);
+//
+//        // =================================================
+//        // WORD LOGGER
+//        // =================================================
+//
+//        WordLogger.startScenario(
+//                scenario.getName(),
+//                browser
+//        );
+//
+//        // =================================================
+//        // EXTENT REPORT
+//        // =================================================
+//        //
+//        // IMPORTANT:
+//        // This creates/uses a separate Extent report
+//        // for Chrome / Edge / Firefox.
+//        //
+//        // Example:
+//        //
+//        // Chrome  -> Chrome_SparkReport.html
+//        // Edge    -> Edge_SparkReport.html
+//        // Firefox -> Firefox_SparkReport.html
+//        //
+//        // =================================================
+//
+//        ExtentManager.createTest(
+//                scenario.getName(),
+//                browser
+//        );
+//
+//        // =================================================
+//        // BROWSER LAUNCH SCREENSHOT
+//        // =================================================
+//
+//        ScreenshotUtils.capture(
+//                driver,
+//                "🖥️ Browser launched successfully: "
+//                + browser.toUpperCase()
+//        );
+//
+//        // =================================================
+//        // START LOG
+//        // =================================================
+//
+//        Log.info(
+//                "========== UI Scenario START =========="
+//        );
+//
+//        Log.info(
+//                "Scenario : "
+//                + scenario.getName()
+//        );
+//
+//        Log.info(
+//                "Browser  : "
+//                + browser.toUpperCase()
+//        );
+//
+//        Log.info(
+//                "======================================="
+//        );
+//    }
+//
+//    // =====================================================
+//    // AFTER SCENARIO
+//    // =====================================================
+//
+//    @After(order = 1)
+//    public void afterScenario(Scenario scenario) {
+//
+//        WebDriver driver =
+//                BaseClass.getDriver();
+//
+//        // =================================================
+//        // FINAL SCREENSHOT
+//        // =================================================
+//
+//        if (driver != null) {
+//
+//            ScreenshotUtils.capture(
+//                    driver,
+//                    scenario.isFailed()
+//                            ? "Scenario FAILED"
+//                            : "Scenario PASSED"
+//            );
+//
+//            // =================================================
+//            // QUIT DRIVER
+//            // =================================================
+//
+//            driver.quit();
+//        }
+//
+//        // =================================================
+//        // END LOG
+//        // =================================================
+//
+//        Log.info(
+//                "========== UI Scenario END =========="
+//        );
+//
+//        // =================================================
+//        // WORD REPORT
+//        // =================================================
+//
+//        WordLogger.endScenario();
+//
+//        // =================================================
+//        // DRIVER CLEANUP
+//        // =================================================
+//
+//        BaseClass.unloadDriver();
+//
+//        BaseClass.unloadBrowser();
+//    }
+//
+//    // =====================================================
+//    // CLEAR THREAD LOCALS
+//    // =====================================================
+//
+//    @After(order = 0)
+//    public void afterScenarioClear() {
+//
+//        // Remove Scenario ThreadLocal
+//        scenarioThreadLocal.remove();
+//
+//        // Remove ExtentTest ThreadLocal
+//        ExtentManager.removeTest();
+//    }
+//}
 //--------
 //package HooksGUI;
 //
