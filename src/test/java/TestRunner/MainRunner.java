@@ -33,79 +33,85 @@ import io.cucumber.testng.CucumberOptions;
         "rerun:target/rerun-ui.txt"
     }
 )
-public class MainRunner extends AbstractTestNGCucumberTests {
+public class MainRunner
+        extends AbstractTestNGCucumberTests {
 
-    // Run Cucumber scenarios in parallel
+    // =====================================================
+    // PARALLEL EXECUTION
+    // =====================================================
+
     @Override
     @DataProvider(parallel = true)
     public Object[][] scenarios() {
+
         return super.scenarios();
     }
 
-    // Set browser for current TestNG thread
+    // =====================================================
+    // BROWSER
+    // =====================================================
+
     @BeforeMethod(alwaysRun = true)
     @Parameters("browser")
-    public void setBrowser(@Optional("") String browser) {
+    public void setBrowser(
+            @Optional("") String browser) {
 
-        if (browser == null || browser.trim().isEmpty()) {
+        // Get browser from TestNG XML parameter
+        // or Jenkins/Maven system property
 
-            browser = System.getProperty("browser", "");
-        }
+        if (browser == null || browser.isEmpty()) {
 
-        if (browser == null || browser.trim().isEmpty()) {
-
-            throw new IllegalStateException(
-                    "Browser is not configured. " +
-                    "Use -Dbrowser for Single Browser mode " +
-                    "or configure browser parameter in TestNG XML."
+            browser = System.getProperty(
+                    "browser",
+                    "chrome"
             );
         }
 
-        browser = browser.trim().toLowerCase();
+        // Set browser in BrowserManager
 
         BrowserManager.setBrowser(browser);
 
-        BaseClass.setBrowser(browser);
+        // Set browser in BaseClass
 
-        String formattedBrowser =
+        BaseClass.setBrowser(
+                browser.toLowerCase()
+        );
+
+        // Set browser in Log4j ThreadContext
+
+        ThreadContext.put(
+                "browser",
                 browser.substring(0, 1).toUpperCase()
-                + browser.substring(1).toLowerCase();
-
-        ThreadContext.put("browser", formattedBrowser);
-
-        System.out.println(
-                "=========================================="
-        );
-
-        System.out.println(
-                "TestNG Thread : "
-                + Thread.currentThread().getName()
-        );
-
-        System.out.println(
-                "Browser       : "
-                + formattedBrowser
-        );
-
-        System.out.println(
-                "=========================================="
+                        + browser.substring(1).toLowerCase()
         );
     }
 
-    // Create log directory before execution
+    // =====================================================
+    // BEFORE SUITE
+    // =====================================================
+
     @BeforeSuite(alwaysRun = true)
     public void setupTestEnvironment() {
 
-        File logDir = new File("Logs");
+        // Create Logs folder
+
+        File logDir =
+                new File("Logs");
 
         if (!logDir.exists()) {
+
             logDir.mkdirs();
         }
+
+        // Delete old log files
 
         flushLogs(logDir);
     }
 
-    // Flush all Extent reports after execution
+    // =====================================================
+    // AFTER SUITE
+    // =====================================================
+
     @AfterSuite(alwaysRun = true)
     public void flushExtentReports() {
 
@@ -124,10 +130,15 @@ public class MainRunner extends AbstractTestNGCucumberTests {
         ExtentManager.flushReports();
     }
 
-    // Delete old log files
-    private void flushLogs(File logDir) {
+    // =====================================================
+    // DELETE OLD LOG FILES
+    // =====================================================
+
+    private void flushLogs(
+            File logDir) {
 
         String[] logFiles = {
+
                 "Chrome.log",
                 "Firefox.log",
                 "Edge.log",
@@ -137,15 +148,23 @@ public class MainRunner extends AbstractTestNGCucumberTests {
 
         for (String fileName : logFiles) {
 
-            File file = new File(logDir, fileName);
+            File file =
+                    new File(
+                            logDir,
+                            fileName
+                    );
 
             if (file.exists()) {
+
                 file.delete();
             }
         }
     }
 
-    // Disable Selenium console logging
+    // =====================================================
+    // SUPPRESS SELENIUM / TESTNG CONSOLE NOISE
+    // =====================================================
+
     static {
 
         Logger.getLogger(
@@ -165,4 +184,3 @@ public class MainRunner extends AbstractTestNGCucumberTests {
         ).setLevel(Level.OFF);
     }
 }
-
