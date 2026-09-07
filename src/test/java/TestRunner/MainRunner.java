@@ -20,9 +20,7 @@ import CommonLayer.ExtentManager;
 import io.cucumber.testng.AbstractTestNGCucumberTests;
 import io.cucumber.testng.CucumberOptions;
 
-
 @CucumberOptions(
-
     features = "src/test/resources/features",
 
     glue = {
@@ -38,14 +36,10 @@ import io.cucumber.testng.CucumberOptions;
         "rerun:target/rerun-ui.txt"
     }
 )
-
-
-public class MainRunner
-        extends AbstractTestNGCucumberTests {
-
+public class MainRunner extends AbstractTestNGCucumberTests {
 
     // ============================================================
-    // RUN CUCUMBER SCENARIOS IN PARALLEL
+    // PARALLEL CUCUMBER SCENARIO EXECUTION
     // ============================================================
 
     @Override
@@ -55,26 +49,33 @@ public class MainRunner
         return super.scenarios();
     }
 
-
     // ============================================================
-    // SET BROWSER FOR CURRENT TESTNG THREAD
+    // SET BROWSER
     // ============================================================
 
     @BeforeMethod(alwaysRun = true)
-
     @Parameters("browser")
-
     public void setBrowser(
             @Optional("") String browser) {
 
+        // --------------------------------------------------------
+        // First priority:
+        // Browser supplied through TestNG XML
+        // --------------------------------------------------------
 
         if (browser == null ||
                 browser.trim().isEmpty()) {
 
             browser =
-                    System.getProperty("browser", "");
+                    System.getProperty(
+                            "browser",
+                            ""
+                    );
         }
 
+        // --------------------------------------------------------
+        // Validate browser
+        // --------------------------------------------------------
 
         if (browser == null ||
                 browser.trim().isEmpty()) {
@@ -86,38 +87,53 @@ public class MainRunner
             );
         }
 
+        // --------------------------------------------------------
+        // Normalize browser name
+        // --------------------------------------------------------
 
         browser =
                 browser.trim().toLowerCase();
 
+        // --------------------------------------------------------
+        // Set browser in framework
+        // --------------------------------------------------------
 
         BrowserManager.setBrowser(browser);
 
         BaseClass.setBrowser(browser);
 
+        // --------------------------------------------------------
+        // Format browser name
+        // --------------------------------------------------------
 
         String formattedBrowser =
                 browser.substring(0, 1).toUpperCase()
                 + browser.substring(1).toLowerCase();
 
+        // --------------------------------------------------------
+        // Set Log4j Thread Context
+        // --------------------------------------------------------
 
         ThreadContext.put(
                 "browser",
                 formattedBrowser
         );
 
+        // --------------------------------------------------------
+        // Console information
+        // --------------------------------------------------------
 
         System.out.println(
                 "=========================================="
         );
 
         System.out.println(
-                "TestNG Thread : "
+                "TESTNG THREAD : "
                 + Thread.currentThread().getName()
         );
 
         System.out.println(
-                "Browser       : "
+                "BROWSER       : "
                 + formattedBrowser
         );
 
@@ -126,35 +142,37 @@ public class MainRunner
         );
     }
 
-
     // ============================================================
-    // CREATE LOG DIRECTORY
+    // TEST ENVIRONMENT SETUP
     // ============================================================
 
     @BeforeSuite(alwaysRun = true)
-
     public void setupTestEnvironment() {
 
         File logDir =
                 new File("Logs");
 
-
         if (!logDir.exists()) {
 
-            logDir.mkdirs();
-        }
+            boolean created =
+                    logDir.mkdirs();
 
+            if (!created) {
+
+                System.out.println(
+                        "WARNING: Unable to create Logs directory."
+                );
+            }
+        }
 
         flushLogs(logDir);
     }
-
 
     // ============================================================
     // FLUSH EXTENT REPORTS
     // ============================================================
 
     @AfterSuite(alwaysRun = true)
-
     public void flushExtentReports() {
 
         System.out.println(
@@ -169,43 +187,63 @@ public class MainRunner
                 "=========================================="
         );
 
-
         ExtentManager.flushReports();
-    }
 
+        System.out.println(
+                "=========================================="
+        );
+
+        System.out.println(
+                "CUSTOM EXTENT REPORTS FLUSHED"
+        );
+
+        System.out.println(
+                "=========================================="
+        );
+    }
 
     // ============================================================
     // DELETE OLD LOG FILES
     // ============================================================
 
-    private void flushLogs(File logDir) {
+    private void flushLogs(
+            File logDir) {
 
         String[] logFiles = {
 
-                "Chrome.log",
-                "Firefox.log",
-                "Edge.log",
-                "RestAssured.log",
-                "Default.log"
+            "Chrome.log",
+            "Firefox.log",
+            "Edge.log",
+            "RestAssured.log",
+            "Default.log"
         };
-
 
         for (String fileName : logFiles) {
 
             File file =
-                    new File(logDir, fileName);
-
+                    new File(
+                            logDir,
+                            fileName
+                    );
 
             if (file.exists()) {
 
-                file.delete();
+                boolean deleted =
+                        file.delete();
+
+                if (!deleted) {
+
+                    System.out.println(
+                            "WARNING: Unable to delete log file: "
+                            + file.getAbsolutePath()
+                    );
+                }
             }
         }
     }
 
-
     // ============================================================
-    // DISABLE SELENIUM CONSOLE LOGGING
+    // DISABLE SELENIUM VERBOSE LOGGING
     // ============================================================
 
     static {
@@ -214,16 +252,13 @@ public class MainRunner
                 "org.openqa.selenium"
         ).setLevel(Level.OFF);
 
-
         Logger.getLogger(
                 "org.openqa.selenium.remote"
         ).setLevel(Level.OFF);
 
-
         Logger.getLogger(
                 "org.openqa.selenium.devtools"
         ).setLevel(Level.OFF);
-
 
         Logger.getLogger(
                 Logger.GLOBAL_LOGGER_NAME
