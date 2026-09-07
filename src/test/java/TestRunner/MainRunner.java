@@ -32,106 +32,79 @@ import io.cucumber.testng.CucumberOptions;
         "rerun:target/rerun-ui.txt"
     }
 )
-public class MainRunner
-        extends AbstractTestNGCucumberTests {
+public class MainRunner extends AbstractTestNGCucumberTests {
 
-    // =====================================================
-    // PARALLEL EXECUTION
-    // =====================================================
-
+    // Run Cucumber scenarios in parallel
     @Override
     @DataProvider(parallel = true)
     public Object[][] scenarios() {
-
         return super.scenarios();
     }
 
-    // =====================================================
-    // BROWSER
-    // =====================================================
-
+    // Set browser for current TestNG thread
     @BeforeMethod(alwaysRun = true)
     @Parameters("browser")
-    public void setBrowser(
-            @Optional("") String browser) {
+    public void setBrowser(@Optional("") String browser) {
 
-        // =================================================
-        // GET BROWSER FROM TESTNG PARAMETER
-        // OR JENKINS SYSTEM PROPERTY
-        // =================================================
+        if (browser == null || browser.trim().isEmpty()) {
 
-        if (browser == null || browser.isEmpty()) {
+            browser = System.getProperty("browser", "");
+        }
 
-            browser = System.getProperty(
-                    "browser",
-                    "chrome"
+        if (browser == null || browser.trim().isEmpty()) {
+
+            throw new IllegalStateException(
+                    "Browser is not configured. " +
+                    "Use -Dbrowser for Single Browser mode " +
+                    "or configure browser parameter in TestNG XML."
             );
         }
 
-        // =================================================
-        // SET BROWSER IN BROWSER MANAGER
-        // =================================================
+        browser = browser.trim().toLowerCase();
 
         BrowserManager.setBrowser(browser);
 
-        // =================================================
-        // SET BROWSER IN BASE CLASS
-        // =================================================
+        BaseClass.setBrowser(browser);
 
-        BaseClass.setBrowser(
-                browser.toLowerCase()
+        String formattedBrowser =
+                browser.substring(0, 1).toUpperCase()
+                + browser.substring(1).toLowerCase();
+
+        ThreadContext.put("browser", formattedBrowser);
+
+        System.out.println(
+                "=========================================="
         );
 
-        // =================================================
-        // SET LOG4J THREAD CONTEXT
-        // =================================================
+        System.out.println(
+                "TestNG Thread : "
+                + Thread.currentThread().getName()
+        );
 
-        ThreadContext.put(
-                "browser",
-                browser.substring(0, 1).toUpperCase()
-                        + browser.substring(1).toLowerCase()
+        System.out.println(
+                "Browser       : "
+                + formattedBrowser
+        );
+
+        System.out.println(
+                "=========================================="
         );
     }
 
-    // =====================================================
-    // BEFORE SUITE
-    // =====================================================
-
+    // Create log directory before execution
     @BeforeSuite(alwaysRun = true)
     public void setupTestEnvironment() {
 
-        // =================================================
-        // CREATE LOG FOLDER
-        // =================================================
-
-        File logDir =
-                new File("Logs");
+        File logDir = new File("Logs");
 
         if (!logDir.exists()) {
-
             logDir.mkdirs();
         }
 
-        // =================================================
-        // DELETE OLD LOG FILES
-        // =================================================
-
         flushLogs(logDir);
-
-        // =================================================
-        // DEFAULT BROWSER FOR LOGGING
-        // =================================================
-
-        ThreadContext.put(
-                "browser",
-                "Chrome"
-        );
     }
 
-    // =====================================================
-    // AFTER SUITE
-    // =====================================================
-
+    // Flush all Extent reports after execution
     @AfterSuite(alwaysRun = true)
     public void flushExtentReports() {
 
@@ -150,15 +123,10 @@ public class MainRunner
         ExtentManager.flushReports();
     }
 
-    // =====================================================
-    // DELETE OLD LOG FILES
-    // =====================================================
-
-    private void flushLogs(
-            File logDir) {
+    // Delete old log files
+    private void flushLogs(File logDir) {
 
         String[] logFiles = {
-
                 "Chrome.log",
                 "Firefox.log",
                 "Edge.log",
@@ -168,23 +136,15 @@ public class MainRunner
 
         for (String fileName : logFiles) {
 
-            File file =
-                    new File(
-                            logDir,
-                            fileName
-                    );
+            File file = new File(logDir, fileName);
 
             if (file.exists()) {
-
                 file.delete();
             }
         }
     }
 
-    // =====================================================
-    // SUPPRESS SELENIUM / TESTNG CONSOLE NOISE
-    // =====================================================
-
+    // Disable Selenium console logging
     static {
 
         Logger.getLogger(
@@ -204,3 +164,4 @@ public class MainRunner
         ).setLevel(Level.OFF);
     }
 }
+
