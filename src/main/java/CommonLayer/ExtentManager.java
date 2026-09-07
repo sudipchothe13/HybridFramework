@@ -1,4 +1,3 @@
-
 package CommonLayer;
 
 import java.io.File;
@@ -14,176 +13,232 @@ import com.aventstack.extentreports.reporter.configuration.Theme;
 
 public class ExtentManager {
 
-    private static final Map<String, ExtentReports> extentMap =
-            new ConcurrentHashMap<>();
 
-    private static final ThreadLocal<ExtentTest> test =
-            new ThreadLocal<>();
+private static final Map<String, ExtentReports> extentMap =
+        new ConcurrentHashMap<>();
 
-    private static String reportFolder;
+private static final ThreadLocal<ExtentTest> test =
+        new ThreadLocal<>();
 
-    private static synchronized String getReportFolder() {
+private static String reportFolder;
 
-        if (reportFolder == null) {
+private static synchronized String getReportFolder() {
 
-            String timestamp =
-                    new SimpleDateFormat("yyyyMMdd_HHmmss")
-                            .format(new Date());
+    if (reportFolder == null) {
 
-            reportFolder =
-                    System.getProperty("user.dir")
-                    + "/Reports/ExtentReports/"
-                    + "Execution_"
-                    + timestamp;
+        String timestamp =
+                new SimpleDateFormat("yyyyMMdd_HHmmss")
+                        .format(new Date());
 
-            File folder = new File(reportFolder);
+        reportFolder =
+                System.getProperty("user.dir")
+                + File.separator
+                + "Reports"
+                + File.separator
+                + "ExtentReports"
+                + File.separator
+                + "Execution_"
+                + timestamp;
 
-            if (!folder.exists()) {
-                folder.mkdirs();
-            }
-        }
+        File folder = new File(reportFolder);
 
-        return reportFolder;
-    }
-
-    public static ExtentReports getExtentReports(String browser) {
-
-        String browserName = formatBrowserName(browser);
-
-        return extentMap.computeIfAbsent(
-                browserName,
-                b -> createExtentReport(b)
-        );
-    }
-
-    private static ExtentReports createExtentReport(String browser) {
-
-        try {
-
-            String reportPath =
-                    getReportFolder()
-                    + "/"
-                    + browser
-                    + "_SparkReport.html";
-
-            System.out.println(
-                    "Creating Extent Report: " + reportPath
-            );
-
-            ExtentSparkReporter spark =
-                    new ExtentSparkReporter(reportPath);
-
-            spark.config().setReportName(
-                    "UI Automation Execution"
-            );
-
-            spark.config().setDocumentTitle(
-                    "Automation Test Report"
-            );
-
-            spark.config().setTheme(
-                    Theme.STANDARD
-            );
-
-            spark.config().setTimeStampFormat(
-                    "dd-MMM-yyyy HH:mm:ss"
-            );
-
-            ExtentReports extent =
-                    new ExtentReports();
-
-            extent.attachReporter(spark);
-
-            extent.setSystemInfo(
-                    "Tester",
-                    "Sudip Chothe"
-            );
-
-            extent.setSystemInfo(
-                    "OS",
-                    System.getProperty("os.name")
-            );
-
-            extent.setSystemInfo(
-                    "Java Version",
-                    System.getProperty("java.version")
-            );
-
-            extent.setSystemInfo(
-                    "Browser",
-                    browser
-            );
-
-            return extent;
-
-        } catch (Exception e) {
+        if (!folder.exists() && !folder.mkdirs()) {
 
             throw new RuntimeException(
-                    "Failed to initialize Extent Report for "
-                    + browser,
-                    e
+                    "Unable to create Extent report directory: "
+                    + reportFolder
             );
         }
     }
 
-    public static ExtentTest createTest(
-            String scenarioName,
-            String browser) {
+    return reportFolder;
+}
+
+public static ExtentReports getExtentReports(String browser) {
+
+    String browserName = formatBrowserName(browser);
+
+    return extentMap.computeIfAbsent(
+            browserName,
+            ExtentManager::createExtentReport
+    );
+}
+
+private static ExtentReports createExtentReport(String browser) {
+
+    try {
+
+        String reportPath =
+                getReportFolder()
+                + File.separator
+                + browser
+                + "_SparkReport.html";
+
+        System.out.println(
+                "=========================================="
+        );
+
+        System.out.println(
+                "CREATING EXTENT REPORT"
+        );
+
+        System.out.println(
+                "Browser : " + browser
+        );
+
+        System.out.println(
+                "Path    : " + reportPath
+        );
+
+        System.out.println(
+                "=========================================="
+        );
+
+        ExtentSparkReporter spark =
+                new ExtentSparkReporter(reportPath);
+
+        spark.config().setReportName(
+                "UI Automation Execution"
+        );
+
+        spark.config().setDocumentTitle(
+                "Automation Test Report"
+        );
+
+        spark.config().setTheme(
+                Theme.STANDARD
+        );
+
+        spark.config().setTimeStampFormat(
+                "dd-MMM-yyyy HH:mm:ss"
+        );
 
         ExtentReports extent =
-                getExtentReports(browser);
+                new ExtentReports();
 
-        ExtentTest t =
-                extent.createTest(scenarioName);
+        extent.attachReporter(spark);
 
-        t.assignCategory(browser);
-
-        test.set(t);
-
-        return t;
-    }
-
-    public static ExtentTest getTest() {
-        return test.get();
-    }
-
-    public static void removeTest() {
-        test.remove();
-    }
-
-    public static synchronized void flushReports() {
-
-        System.out.println(
-                "========== FLUSHING EXTENT REPORTS =========="
+        extent.setSystemInfo(
+                "Tester",
+                "Sudip Chothe"
         );
 
-        for (Map.Entry<String, ExtentReports> entry :
-                extentMap.entrySet()) {
-
-            System.out.println(
-                    "Flushing: " + entry.getKey()
-            );
-
-            entry.getValue().flush();
-        }
-
-        System.out.println(
-                "========== EXTENT REPORTS FLUSHED =========="
+        extent.setSystemInfo(
+                "OS",
+                System.getProperty("os.name")
         );
-    }
 
-    private static String formatBrowserName(String browser) {
+        extent.setSystemInfo(
+                "Java Version",
+                System.getProperty("java.version")
+        );
 
-        if (browser == null ||
-                browser.trim().isEmpty()) {
+        extent.setSystemInfo(
+                "Browser",
+                browser
+        );
 
-            return "Unknown";
-        }
+        return extent;
 
-        browser = browser.trim();
+    } catch (Exception e) {
 
-        return browser.substring(0, 1).toUpperCase()
-                + browser.substring(1).toLowerCase();
+        throw new RuntimeException(
+                "Failed to initialize Extent Report for "
+                + browser,
+                e
+        );
     }
 }
 
+public static ExtentTest createTest(
+        String scenarioName,
+        String browser) {
+
+    ExtentReports extent =
+            getExtentReports(browser);
+
+    ExtentTest extentTest =
+            extent.createTest(scenarioName);
+
+    extentTest.assignCategory(browser);
+
+    test.set(extentTest);
+
+    return extentTest;
+}
+
+public static ExtentTest getTest() {
+
+    return test.get();
+}
+
+public static void removeTest() {
+
+    test.remove();
+}
+
+public static synchronized void flushReports() {
+
+    System.out.println(
+            "=========================================="
+    );
+
+    System.out.println(
+            "FLUSHING EXTENT REPORTS"
+    );
+
+    System.out.println(
+            "=========================================="
+    );
+
+    for (Map.Entry<String, ExtentReports> entry :
+            extentMap.entrySet()) {
+
+        System.out.println(
+                "Flushing : " + entry.getKey()
+        );
+
+        try {
+
+            entry.getValue().flush();
+
+        } catch (Exception e) {
+
+            System.err.println(
+                    "Failed to flush report for "
+                    + entry.getKey()
+            );
+
+            e.printStackTrace();
+        }
+    }
+
+    System.out.println(
+            "=========================================="
+    );
+
+    System.out.println(
+            "EXTENT REPORTS FLUSHED"
+    );
+
+    System.out.println(
+            "=========================================="
+    );
+}
+
+private static String formatBrowserName(String browser) {
+
+    if (browser == null ||
+            browser.trim().isEmpty()) {
+
+        return "Unknown";
+    }
+
+    browser = browser.trim();
+
+    return browser.substring(0, 1).toUpperCase()
+            + browser.substring(1).toLowerCase();
+}
+
+
+}
