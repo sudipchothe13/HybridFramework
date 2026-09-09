@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
+<testng-results ignored="0" total="1" passed="0" failed="0" skipped="1">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2026-09-06T19:35:25 IST" name="Default suite" finished-at="2026-09-06T19:36:02 IST" duration-ms="37427">
+  <suite started-at="2026-09-09T09:46:12 IST" name="Default suite" finished-at="2026-09-09T09:46:12 IST" duration-ms="70">
     <groups>
       <group name="cucumber">
-        <method signature="AbstractTestNGCucumberTests.runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:TestRunner.MainRunner@52d239ba]" name="runScenario" class="io.cucumber.testng.AbstractTestNGCucumberTests"/>
+        <method signature="AbstractTestNGCucumberTests.runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:TestRunner.MainRunner@3a1dd365]" name="runScenario" class="io.cucumber.testng.AbstractTestNGCucumberTests"/>
       </group> <!-- cucumber -->
     </groups>
-    <test started-at="2026-09-06T19:35:25 IST" name="Default test" finished-at="2026-09-06T19:36:02 IST" duration-ms="37427">
+    <test started-at="2026-09-09T09:46:12 IST" name="Default test" finished-at="2026-09-09T09:46:12 IST" duration-ms="70">
       <class name="TestRunner.MainRunner">
-        <test-method is-config="true" signature="setupTestEnvironment()[pri:0, instance:TestRunner.MainRunner@52d239ba]" started-at="2026-09-06T19:35:25 IST" name="setupTestEnvironment" finished-at="2026-09-06T19:35:25 IST" duration-ms="3" status="PASS">
+        <test-method is-config="true" signature="setupTestEnvironment()[pri:0, instance:TestRunner.MainRunner@3a1dd365]" started-at="2026-09-09T09:46:12 IST" name="setupTestEnvironment" finished-at="2026-09-09T09:46:12 IST" duration-ms="3" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setupTestEnvironment -->
-        <test-method is-config="true" signature="setUpClass(org.testng.ITestContext)[pri:0, instance:TestRunner.MainRunner@52d239ba]" started-at="2026-09-06T19:35:25 IST" name="setUpClass" finished-at="2026-09-06T19:35:25 IST" duration-ms="49" status="PASS">
+        <test-method is-config="true" signature="setUpClass(org.testng.ITestContext)[pri:0, instance:TestRunner.MainRunner@3a1dd365]" started-at="2026-09-09T09:46:12 IST" name="setUpClass" finished-at="2026-09-09T09:46:12 IST" duration-ms="55" status="PASS">
           <params>
             <param index="0">
               <value>
-                <![CDATA[org.testng.TestRunner@746b18fd]]>
+                <![CDATA[org.testng.TestRunner@1ea9f009]]>
               </value>
             </param>
           </params>
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setUpClass -->
-        <test-method is-config="true" signature="setBrowser(java.lang.String)[pri:0, instance:TestRunner.MainRunner@52d239ba]" started-at="2026-09-06T19:35:25 IST" name="setBrowser" finished-at="2026-09-06T19:35:25 IST" duration-ms="2" status="PASS">
+        <test-method is-config="true" signature="setBrowser(java.lang.String)[pri:0, instance:TestRunner.MainRunner@3a1dd365]" started-at="2026-09-09T09:46:12 IST" name="setBrowser" finished-at="2026-09-09T09:46:12 IST" duration-ms="1" status="FAIL">
           <params>
             <param index="0">
               <value>
@@ -33,30 +33,78 @@
               </value>
             </param>
           </params>
+          <exception class="java.lang.IllegalStateException">
+            <message>
+              <![CDATA[Browser is not configured. Use -Dbrowser for Single Browser mode or configure browser parameter in TestNG XML.]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.IllegalStateException: Browser is not configured. Use -Dbrowser for Single Browser mode or configure browser parameter in TestNG XML.
+at TestRunner.MainRunner.setBrowser(MainRunner.java:83)
+at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:141)
+at org.testng.internal.invokers.MethodInvocationHelper.invokeMethodConsideringTimeout(MethodInvocationHelper.java:71)
+at org.testng.internal.invokers.ConfigInvoker.invokeConfigurationMethod(ConfigInvoker.java:400)
+at org.testng.internal.invokers.ConfigInvoker.invokeConfigurations(ConfigInvoker.java:333)
+at org.testng.internal.invokers.TestInvoker.runConfigMethods(TestInvoker.java:836)
+at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:601)
+at org.testng.internal.invokers.TestInvoker.invokeTestMethod(TestInvoker.java:230)
+at org.testng.internal.invokers.TestMethodWithDataProviderMethodWorker.call(TestMethodWithDataProviderMethodWorker.java:81)
+at org.testng.internal.thread.Async$AsyncTask.run(Async.java:34)
+at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+at java.base/java.lang.Thread.run(Thread.java:1583)
+]]>
+            </full-stacktrace>
+          </exception> <!-- java.lang.IllegalStateException -->
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setBrowser -->
-        <test-method signature="runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:TestRunner.MainRunner@52d239ba]" started-at="2026-09-06T19:35:25 IST" name="runScenario" description="Runs Cucumber Scenarios" data-provider="scenarios" finished-at="2026-09-06T19:36:02 IST" duration-ms="37364" status="PASS">
+        <test-method signature="runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:TestRunner.MainRunner@3a1dd365]" started-at="2026-09-09T09:46:12 IST" name="runScenario" description="Runs Cucumber Scenarios" data-provider="scenarios" finished-at="2026-09-09T09:46:12 IST" duration-ms="0" status="SKIP">
           <params>
             <param index="0">
               <value>
-                <![CDATA["OrangeHRM Login"]]>
+                <![CDATA[""]]>
               </value>
             </param>
             <param index="1">
               <value>
-                <![CDATA["OrangeHRM feature"]]>
+                <![CDATA["Unknown"]]>
               </value>
             </param>
           </params>
+          <exception class="java.lang.IllegalStateException">
+            <message>
+              <![CDATA[Browser is not configured. Use -Dbrowser for Single Browser mode or configure browser parameter in TestNG XML.]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.IllegalStateException: Browser is not configured. Use -Dbrowser for Single Browser mode or configure browser parameter in TestNG XML.
+at TestRunner.MainRunner.setBrowser(MainRunner.java:83)
+at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:141)
+at org.testng.internal.invokers.MethodInvocationHelper.invokeMethodConsideringTimeout(MethodInvocationHelper.java:71)
+at org.testng.internal.invokers.ConfigInvoker.invokeConfigurationMethod(ConfigInvoker.java:400)
+at org.testng.internal.invokers.ConfigInvoker.invokeConfigurations(ConfigInvoker.java:333)
+at org.testng.internal.invokers.TestInvoker.runConfigMethods(TestInvoker.java:836)
+at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:601)
+at org.testng.internal.invokers.TestInvoker.invokeTestMethod(TestInvoker.java:230)
+at org.testng.internal.invokers.TestMethodWithDataProviderMethodWorker.call(TestMethodWithDataProviderMethodWorker.java:81)
+at org.testng.internal.thread.Async$AsyncTask.run(Async.java:34)
+at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+at java.base/java.lang.Thread.run(Thread.java:1583)
+]]>
+            </full-stacktrace>
+          </exception> <!-- java.lang.IllegalStateException -->
           <reporter-output>
           </reporter-output>
         </test-method> <!-- runScenario -->
-        <test-method is-config="true" signature="tearDownClass()[pri:0, instance:TestRunner.MainRunner@52d239ba]" started-at="2026-09-06T19:36:02 IST" name="tearDownClass" finished-at="2026-09-06T19:36:02 IST" duration-ms="1" status="PASS">
+        <test-method is-config="true" signature="tearDownClass()[pri:0, instance:TestRunner.MainRunner@3a1dd365]" started-at="2026-09-09T09:46:12 IST" name="tearDownClass" finished-at="2026-09-09T09:46:12 IST" duration-ms="2" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- tearDownClass -->
-        <test-method is-config="true" signature="flushExtentReports()[pri:0, instance:TestRunner.MainRunner@52d239ba]" started-at="2026-09-06T19:36:02 IST" name="flushExtentReports" finished-at="2026-09-06T19:36:03 IST" duration-ms="85" status="PASS">
+        <test-method is-config="true" signature="flushExtentReports()[pri:0, instance:TestRunner.MainRunner@3a1dd365]" started-at="2026-09-09T09:46:12 IST" name="flushExtentReports" finished-at="2026-09-09T09:46:12 IST" duration-ms="0" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- flushExtentReports -->

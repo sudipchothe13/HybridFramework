@@ -3,11 +3,16 @@
 <suite name="Failed suite [Default suite]" guice-stage="DEVELOPMENT">
   <test thread-count="5" name="Default test(failed)">
     <classes>
-      <class name="TestLayer.AshokITNotes">
+      <class name="TestRunner.MainRunner">
         <methods>
-          <include name="test"/>
+          <include name="setUpClass"/>
+          <include name="setBrowser"/>
+          <include name="setupTestEnvironment"/>
+          <include name="runScenario"/>
+          <include name="tearDownClass"/>
+          <include name="flushExtentReports"/>
         </methods>
-      </class> <!-- TestLayer.AshokITNotes -->
+      </class> <!-- TestRunner.MainRunner -->
     </classes>
   </test> <!-- Default test(failed) -->
 </suite> <!-- Failed suite [Default suite] -->
