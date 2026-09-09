@@ -32,7 +32,7 @@ public class OrangeHRMStepDef {
        
         wait.until(ExpectedConditions.visibilityOf(login.loginBtn()));
         Log.info("Application launched");
- //       ScreenshotUtils.capture(driver, "Application launched successfully");
+        ScreenshotUtils.capture(driver, "Application launched successfully");
         Thread.sleep(3000);
     }
 
@@ -42,16 +42,16 @@ public class OrangeHRMStepDef {
         login.enterUsername(ConfigReader.get("username"));
         Thread.sleep(2000);
         Log.info("User Entered Username");
- //       ScreenshotUtils.capture(driver, "User entered Username");
+        ScreenshotUtils.capture(driver, "User entered Username");
 
         login.enterPassword(ConfigReader.get("password"));
         Log.info("User Entered Password");
- //       ScreenshotUtils.capture(driver, "User entered Password");
+        ScreenshotUtils.capture(driver, "User entered Password");
 
         login.clickOnLoginBtn();
         wait.until(ExpectedConditions.visibilityOf(login.dashBoard()));
         Log.info("User clicked on Login button");
- //       ScreenshotUtils.capture(driver, "User clicked Login button");
+        ScreenshotUtils.capture(driver, "User clicked Login button");
         Thread.sleep(3000);
     }
 
@@ -61,11 +61,11 @@ public class OrangeHRMStepDef {
         boolean isDashboardVisible = login.isDashboardDisplayed();
 
         if (isDashboardVisible) {
- //           ScreenshotUtils.capture(driver, "User successfully navigated to Dashboard");
+            ScreenshotUtils.capture(driver, "User successfully navigated to Dashboard");
             Log.info("User successfully navigated to Dashboard");
             
         } else {
-  //          ScreenshotUtils.capture(driver, "Dashboard not displayed - Login failed");
+            ScreenshotUtils.capture(driver, "Dashboard not displayed - Login failed");
             Log.info("User did not navigate to OrangeHRM Dashboard");
             throw new AssertionError("User did not navigate to OrangeHRM Dashboard");
             

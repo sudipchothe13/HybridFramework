@@ -28,7 +28,7 @@ import io.cucumber.testng.CucumberOptions;
         "HooksGUI"
     },
 
-    tags = "@Data",
+    tags = "@UI",
 
     plugin = {
         "pretty",
