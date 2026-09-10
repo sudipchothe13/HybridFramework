@@ -1,0 +1,9 @@
+2026-09-10 22:06:44 INFO  [Automation Testing] [Chrome] ========== UI Scenario START ==========
+2026-09-10 22:06:44 INFO  [Automation Testing] [Chrome] Scenario : OrangeHRM Login
+2026-09-10 22:06:44 INFO  [Automation Testing] [Chrome] Browser  : CHROME
+2026-09-10 22:06:44 INFO  [Automation Testing] [Chrome] =======================================
+2026-09-10 22:06:56 INFO  [Automation Testing] [Chrome] Application launched
+2026-09-10 22:07:02 INFO  [Automation Testing] [Chrome] User Entered Username
+2026-09-10 22:07:03 INFO  [Automation Testing] [Chrome] User Entered Password
+2026-09-10 22:07:10 INFO  [Automation Testing] [Chrome] User clicked on Login button
+2026-09-10 22:07:18 INFO  [Automation Testing] [Chrome] ========== UI Scenario END ==========

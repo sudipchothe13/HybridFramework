@@ -7,10 +7,9 @@
         <methods>
           <include name="setUpClass"/>
           <include name="setBrowser"/>
-          <include name="setupTestEnvironment"/>
-          <include name="runScenario"/>
           <include name="tearDownClass"/>
-          <include name="flushExtentReports"/>
+          <include name="runScenario" invocation-numbers="0"/>
+          <include name="setupExtentReport"/>
         </methods>
       </class> <!-- TestRunner.MainRunner -->
     </classes>

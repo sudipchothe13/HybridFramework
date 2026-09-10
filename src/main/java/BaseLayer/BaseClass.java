@@ -1,9 +1,7 @@
 package BaseLayer;
 
 import java.util.Map;
-import java.util.Properties;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.PrintStream;
 
 import org.apache.logging.log4j.ThreadContext;
@@ -21,17 +19,6 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
 public class BaseClass {
-	protected Properties prop;
-	public  BaseClass ()  {
-		prop = new Properties();
-		try {
-			FileInputStream fis = new FileInputStream(
-			 System.getProperty("user.dir") + "/src/main/java/ConfigLayer/Config.properties");
-			prop.load(fis);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
     // ================= DRIVER =================
     private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
@@ -92,9 +79,8 @@ public class BaseClass {
 
         RestAssured.baseURI = ConfigReader.get("baseURI");
         httpRequest.set(RestAssured.given().contentType(ContentType.JSON));
-        
     }
-    
+
     public static void addHeaders(Map<String, String> headers) {
         if (headers != null && !headers.isEmpty()) httpRequest.get().headers(headers);
     }
