@@ -59,7 +59,7 @@ public class OrangeHRMStepDef {
     @Then("verify user navigates on OrangeHRM Landing page")
     public void verify_user_navigates_on_orange_hrm_landing_page() throws InterruptedException {
 
-    	Assert.assertEquals(100, 200);       
+//    	Assert.assertEquals(100, 200);       
     	boolean isDashboardVisible = login.isDashboardDisplayed();
 
         if (isDashboardVisible) {
