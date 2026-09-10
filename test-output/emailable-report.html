@@ -9,17 +9,19 @@
 <table>
 <tr><th>Test</th><th># Passed</th><th># Skipped</th><th># Retried</th><th># Failed</th><th>Time (ms)</th><th>Included Groups</th><th>Excluded Groups</th></tr>
 <tr><th colspan="8">Default suite</th></tr>
-<tr><td><a href="#t0">Default test</a></td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num attn">1</td><td class="num">39,218</td><td></td><td></td></tr>
+<tr><td><a href="#t0">Default test</a></td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num attn">1</td><td class="num">36,922</td><td></td><td></td></tr>
 </table>
-<table id='summary'><thead><tr><th>Class</th><th>Method</th><th>Start</th><th>Time (ms)</th></tr></thead><tbody><tr><th colspan="4">Default suite</th></tr></tbody><tbody id="t0"><tr><th colspan="4">Default test &#8212; failed</th></tr><tr class="failedeven"><td rowspan="1">TestRunner.MainRunner</td><td><a href="#m0">runScenario</a></td><td rowspan="1">1789058199114</td><td rowspan="1">39000</td></tr></tbody>
+<table id='summary'><thead><tr><th>Class</th><th>Method</th><th>Start</th><th>Time (ms)</th></tr></thead><tbody><tr><th colspan="4">Default suite</th></tr></tbody><tbody id="t0"><tr><th colspan="4">Default test &#8212; failed</th></tr><tr class="failedeven"><td rowspan="1">TestRunner.MainRunner</td><td><a href="#m0">runScenario</a></td><td rowspan="1">1789059230141</td><td rowspan="1">36686</td></tr></tbody>
 </table>
-<h2>Default test</h2><h3 id="m0">TestRunner.MainRunner#runScenario</h3><table class="result"><tr class="param"><th>Parameter #1</th><th>Parameter #2</th></tr><tr class="param stripe"><td>&quot;OrangeHRM Login&quot;</td><td>&quot;OrangeHRM feature&quot;</td></tr><tr><th colspan="2">Exception</th></tr><tr><td colspan="2"><div class="stacktrace">junit.framework.AssertionFailedError: expected:&lt;100&gt; but was:&lt;200&gt;
-	at junit.framework.Assert.fail(Assert.java:50)
-	at junit.framework.Assert.failNotEquals(Assert.java:287)
-	at junit.framework.Assert.assertEquals(Assert.java:67)
-	at junit.framework.Assert.assertEquals(Assert.java:199)
-	at junit.framework.Assert.assertEquals(Assert.java:205)
-	at stepDefinitions.OrangeHRMStepDef.verify_user_navigates_on_orange_hrm_landing_page(OrangeHRMStepDef.java:62)
+<h2>Default test</h2><h3 id="m0">TestRunner.MainRunner#runScenario</h3><table class="result"><tr class="param"><th>Parameter #1</th><th>Parameter #2</th></tr><tr class="param stripe"><td>&quot;OrangeHRM Login&quot;</td><td>&quot;OrangeHRM feature&quot;</td></tr><tr><th colspan="2">Exception</th></tr><tr><td colspan="2"><div class="stacktrace">java.lang.AssertionError: expected [200] but found [100]
+	at org.testng.Assert.fail(Assert.java:111)
+	at org.testng.Assert.failNotEquals(Assert.java:1590)
+	at org.testng.Assert.assertEqualsImpl(Assert.java:150)
+	at org.testng.Assert.assertEquals(Assert.java:132)
+	at org.testng.Assert.assertEquals(Assert.java:1431)
+	at org.testng.Assert.assertEquals(Assert.java:1395)
+	at org.testng.Assert.assertEquals(Assert.java:1441)
+	at stepDefinitions.OrangeHRMStepDef.verify_user_navigates_on_orange_hrm_landing_page(OrangeHRMStepDef.java:63)
 	at ✽.verify user navigates on OrangeHRM Landing page(file:///Users/sudipdilipchothe/Documents/HybridFramework%202/src/test/resources/features/OrangeHRM.feature:7)
 </div></td></tr></table><p class="totop"><a href="#summary">back to summary</a></p>
 </body>

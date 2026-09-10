@@ -2,30 +2,30 @@
 <testng-results ignored="0" total="1" passed="0" failed="1" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2026-09-10T22:06:39 IST" name="Default suite" finished-at="2026-09-10T22:07:18 IST" duration-ms="39218">
+  <suite started-at="2026-09-10T22:23:50 IST" name="Default suite" finished-at="2026-09-10T22:24:26 IST" duration-ms="36922">
     <groups>
       <group name="cucumber">
-        <method signature="AbstractTestNGCucumberTests.runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:TestRunner.MainRunner@395b56bb]" name="runScenario" class="io.cucumber.testng.AbstractTestNGCucumberTests"/>
+        <method signature="AbstractTestNGCucumberTests.runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:TestRunner.MainRunner@18b0930f]" name="runScenario" class="io.cucumber.testng.AbstractTestNGCucumberTests"/>
       </group> <!-- cucumber -->
     </groups>
-    <test started-at="2026-09-10T22:06:39 IST" name="Default test" finished-at="2026-09-10T22:07:18 IST" duration-ms="39218">
+    <test started-at="2026-09-10T22:23:50 IST" name="Default test" finished-at="2026-09-10T22:24:26 IST" duration-ms="36922">
       <class name="TestRunner.MainRunner">
-        <test-method is-config="true" signature="setupExtentReport()[pri:0, instance:TestRunner.MainRunner@395b56bb]" started-at="2026-09-10T22:06:39 IST" name="setupExtentReport" finished-at="2026-09-10T22:06:39 IST" duration-ms="3" status="PASS">
+        <test-method is-config="true" signature="setupExtentReport()[pri:0, instance:TestRunner.MainRunner@18b0930f]" started-at="2026-09-10T22:23:50 IST" name="setupExtentReport" finished-at="2026-09-10T22:23:50 IST" duration-ms="5" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setupExtentReport -->
-        <test-method is-config="true" signature="setUpClass(org.testng.ITestContext)[pri:0, instance:TestRunner.MainRunner@395b56bb]" started-at="2026-09-10T22:06:39 IST" name="setUpClass" finished-at="2026-09-10T22:06:39 IST" duration-ms="101" status="PASS">
+        <test-method is-config="true" signature="setUpClass(org.testng.ITestContext)[pri:0, instance:TestRunner.MainRunner@18b0930f]" started-at="2026-09-10T22:23:50 IST" name="setUpClass" finished-at="2026-09-10T22:23:50 IST" duration-ms="124" status="PASS">
           <params>
             <param index="0">
               <value>
-                <![CDATA[org.testng.TestRunner@6ecab872]]>
+                <![CDATA[org.testng.TestRunner@12968227]]>
               </value>
             </param>
           </params>
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setUpClass -->
-        <test-method is-config="true" signature="setBrowser(java.lang.String)[pri:0, instance:TestRunner.MainRunner@395b56bb]" started-at="2026-09-10T22:06:39 IST" name="setBrowser" finished-at="2026-09-10T22:06:39 IST" duration-ms="1" status="PASS">
+        <test-method is-config="true" signature="setBrowser(java.lang.String)[pri:0, instance:TestRunner.MainRunner@18b0930f]" started-at="2026-09-10T22:23:50 IST" name="setBrowser" finished-at="2026-09-10T22:23:50 IST" duration-ms="0" status="PASS">
           <params>
             <param index="0">
               <value>
@@ -36,7 +36,7 @@
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setBrowser -->
-        <test-method signature="runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:TestRunner.MainRunner@395b56bb]" started-at="2026-09-10T22:06:39 IST" name="runScenario" description="Runs Cucumber Scenarios" data-provider="scenarios" finished-at="2026-09-10T22:07:18 IST" duration-ms="39000" status="FAIL">
+        <test-method signature="runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:TestRunner.MainRunner@18b0930f]" started-at="2026-09-10T22:23:50 IST" name="runScenario" description="Runs Cucumber Scenarios" data-provider="scenarios" finished-at="2026-09-10T22:24:26 IST" duration-ms="36686" status="FAIL">
           <params>
             <param index="0">
               <value>
@@ -49,26 +49,28 @@
               </value>
             </param>
           </params>
-          <exception class="junit.framework.AssertionFailedError">
+          <exception class="java.lang.AssertionError">
             <message>
-              <![CDATA[expected:<100> but was:<200>]]>
+              <![CDATA[expected [200] but found [100]]]>
             </message>
             <full-stacktrace>
-              <![CDATA[junit.framework.AssertionFailedError: expected:<100> but was:<200>
-at junit.framework.Assert.fail(Assert.java:50)
-at junit.framework.Assert.failNotEquals(Assert.java:287)
-at junit.framework.Assert.assertEquals(Assert.java:67)
-at junit.framework.Assert.assertEquals(Assert.java:199)
-at junit.framework.Assert.assertEquals(Assert.java:205)
-at stepDefinitions.OrangeHRMStepDef.verify_user_navigates_on_orange_hrm_landing_page(OrangeHRMStepDef.java:62)
+              <![CDATA[java.lang.AssertionError: expected [200] but found [100]
+at org.testng.Assert.fail(Assert.java:111)
+at org.testng.Assert.failNotEquals(Assert.java:1590)
+at org.testng.Assert.assertEqualsImpl(Assert.java:150)
+at org.testng.Assert.assertEquals(Assert.java:132)
+at org.testng.Assert.assertEquals(Assert.java:1431)
+at org.testng.Assert.assertEquals(Assert.java:1395)
+at org.testng.Assert.assertEquals(Assert.java:1441)
+at stepDefinitions.OrangeHRMStepDef.verify_user_navigates_on_orange_hrm_landing_page(OrangeHRMStepDef.java:63)
 at ✽.verify user navigates on OrangeHRM Landing page(file:///Users/sudipdilipchothe/Documents/HybridFramework%202/src/test/resources/features/OrangeHRM.feature:7)
 ]]>
             </full-stacktrace>
-          </exception> <!-- junit.framework.AssertionFailedError -->
+          </exception> <!-- java.lang.AssertionError -->
           <reporter-output>
           </reporter-output>
         </test-method> <!-- runScenario -->
-        <test-method is-config="true" signature="tearDownClass()[pri:0, instance:TestRunner.MainRunner@395b56bb]" started-at="2026-09-10T22:07:18 IST" name="tearDownClass" finished-at="2026-09-10T22:07:18 IST" duration-ms="106" status="PASS">
+        <test-method is-config="true" signature="tearDownClass()[pri:0, instance:TestRunner.MainRunner@18b0930f]" started-at="2026-09-10T22:24:26 IST" name="tearDownClass" finished-at="2026-09-10T22:24:26 IST" duration-ms="101" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- tearDownClass -->

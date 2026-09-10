@@ -130,13 +130,15 @@
                   </a> <!-- runScenario("OrangeHRM Login", "OrangeHRM feature") -->
                   <span class="method-name">runScenario</span>
                   <span class="parameters">("OrangeHRM Login","OrangeHRM feature")</span>
-                  <div class="stack-trace">junit.framework.AssertionFailedError: expected:&lt;100&gt; but was:&lt;200&gt;
-	at junit.framework.Assert.fail(Assert.java:50)
-	at junit.framework.Assert.failNotEquals(Assert.java:287)
-	at junit.framework.Assert.assertEquals(Assert.java:67)
-	at junit.framework.Assert.assertEquals(Assert.java:199)
-	at junit.framework.Assert.assertEquals(Assert.java:205)
-	at stepDefinitions.OrangeHRMStepDef.verify_user_navigates_on_orange_hrm_landing_page(OrangeHRMStepDef.java:62)
+                  <div class="stack-trace">java.lang.AssertionError: expected [200] but found [100]
+	at org.testng.Assert.fail(Assert.java:111)
+	at org.testng.Assert.failNotEquals(Assert.java:1590)
+	at org.testng.Assert.assertEqualsImpl(Assert.java:150)
+	at org.testng.Assert.assertEquals(Assert.java:132)
+	at org.testng.Assert.assertEquals(Assert.java:1431)
+	at org.testng.Assert.assertEquals(Assert.java:1395)
+	at org.testng.Assert.assertEquals(Assert.java:1441)
+	at stepDefinitions.OrangeHRMStepDef.verify_user_navigates_on_orange_hrm_landing_page(OrangeHRMStepDef.java:63)
 	at ✽.verify user navigates on OrangeHRM Landing page(file:///Users/sudipdilipchothe/Documents/HybridFramework%202/src/test/resources/features/OrangeHRM.feature:7)
 
 </div> <!-- stack-trace -->
@@ -149,7 +151,7 @@
         </div> <!-- panel Default_suite -->
         <div panel-name="test-xml-Default_suite" class="panel">
           <div class="main-panel-header rounded-window-top">
-            <span class="header-content">/private/var/folders/0g/gjky0cks3tzdst2lxz2s_g940000gn/T/testng-eclipse--1083371398/testng-customsuite.xml</span>
+            <span class="header-content">/private/var/folders/0g/gjky0cks3tzdst2lxz2s_g940000gn/T/testng-eclipse--990163641/testng-customsuite.xml</span>
           </div> <!-- main-panel-header rounded-window-top -->
           <div class="main-panel-content rounded-window-bottom">
             <pre>
@@ -210,12 +212,12 @@ data.addRows(1);
 data.setCell(0, 0, 0)
 data.setCell(0, 1, 'runScenario')
 data.setCell(0, 2, 'TestRunner.MainRunner')
-data.setCell(0, 3, 39000);
+data.setCell(0, 3, 36686);
 window.suiteTableData['Default_suite']= { tableData: data, tableDiv: 'times-div-Default_suite'}
 return data;
 }
               </script>
-              <span class="suite-total-time">Total running time: 39 seconds</span>
+              <span class="suite-total-time">Total running time: 36 seconds</span>
               <div id="times-div-Default_suite">
               </div> <!-- times-div-Default_suite -->
             </div> <!-- times-div -->
@@ -247,22 +249,22 @@ return data;
                 <span class="method-start">0 ms</span>
               </div> <!-- configuration-suite before -->
               <div class="configuration-class before">
-                <span class="method-name">setUpClass(org.testng.TestRunner@6ecab872)</span>
-                <span class="method-start">8 ms</span>
+                <span class="method-name">setUpClass(org.testng.TestRunner@12968227)</span>
+                <span class="method-start">10 ms</span>
               </div> <!-- configuration-class before -->
               <div class="configuration-method before">
                 <span class="method-name">setBrowser(chrome)</span>
-                <span class="method-start">113 ms</span>
+                <span class="method-start">138 ms</span>
               </div> <!-- configuration-method before -->
               <div class="test-method">
                 <img src="failed.png">
                 </img>
                 <span class="method-name">runScenario("OrangeHRM Login", "OrangeHRM feature")</span>
-                <span class="method-start">114 ms</span>
+                <span class="method-start">139 ms</span>
               </div> <!-- test-method -->
               <div class="configuration-class after">
                 <span class="method-name">tearDownClass</span>
-                <span class="method-start">39115 ms</span>
+                <span class="method-start">36826 ms</span>
               </div> <!-- configuration-class after -->
           </div> <!-- main-panel-content rounded-window-bottom -->
         </div> <!-- panel -->

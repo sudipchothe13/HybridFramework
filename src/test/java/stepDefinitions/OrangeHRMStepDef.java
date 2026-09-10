@@ -5,6 +5,7 @@ import java.time.Duration;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 
 import BaseLayer.BaseClass;
 import CommonLayer.ConfigReader;
@@ -12,7 +13,7 @@ import CommonLayer.ScreenshotUtils; // <-- updated
 import PageLayer.OrangeHRMDemoPage;
 import UtilsLayer.Log;
 import io.cucumber.java.en.*;
-import junit.framework.Assert;
+
 
 public class OrangeHRMStepDef {
 
