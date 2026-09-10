@@ -1,0 +1,958 @@
+//Complete jenkins file -- Parameterised , with diff browser also parallel testing using TestNG.xml file , also sent email report
+
+pipeline {
+
+    agent any
+
+    tools {
+        jdk 'JAVA_HOME'
+        maven 'Maven-3.9.9'
+    }
+
+    parameters {
+
+        string(
+            name: 'BRANCH',
+            defaultValue: 'master',
+            description: 'Git Branch'
+        )
+
+        string(
+            name: 'TAG',
+            defaultValue: '@UI',
+            description: 'Cucumber Tag'
+        )
+
+        choice(
+            name: 'EXECUTION_MODE',
+            choices: [
+                'Single Browser',
+                'TestNG XML Parallel'
+            ],
+            description: 'Select execution mode'
+        )
+
+        choice(
+            name: 'BROWSER',
+            choices: [
+                'chrome',
+                'firefox',
+                'edge'
+            ],
+            description: 'Browser for Single Browser execution'
+        )
+
+        booleanParam(
+            name: 'HEADLESS',
+            defaultValue: true,
+            description: 'Run browser in headless mode'
+        )
+
+        string(
+            name: 'EMAIL_TO',
+            defaultValue: 'sudipchothe1@gmail.com',
+            description: 'Enter multiple email IDs separated by comma'
+        )
+    }
+
+    environment {
+        MAVEN_OPTS = '-Xmx2048m'
+        EXECUTED_BROWSERS = 'Not detected'
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+
+                deleteDir()
+
+                git(
+                    branch: "${params.BRANCH}",
+                    url: 'https://github.com/sudipchothe13/HybridFramework.git'
+                )
+
+                echo "=========================================="
+                echo "CHECKOUT COMPLETED"
+                echo "=========================================="
+
+                sh '''
+                    echo "Git branch:"
+                    git branch --show-current
+
+                    echo ""
+                    echo "Git commit:"
+                    git rev-parse --short HEAD
+
+                    echo ""
+                    echo "Git commit message:"
+                    git log -1 --pretty=%B
+
+                    echo ""
+                    echo "Root files:"
+                    ls -la
+                '''
+            }
+        }
+
+        stage('Verify Tools') {
+            steps {
+
+                sh '''
+                    echo "=========================================="
+                    echo "JAVA VERSION"
+                    echo "=========================================="
+
+                    java -version
+
+                    echo ""
+                    echo "=========================================="
+                    echo "MAVEN VERSION"
+                    echo "=========================================="
+
+                    mvn -version
+                '''
+            }
+        }
+
+        stage('Find TestNG XML') {
+
+            when {
+                expression {
+                    params.EXECUTION_MODE == 'TestNG XML Parallel'
+                }
+            }
+
+            steps {
+
+                sh '''
+                    echo "=========================================="
+                    echo "FINDING ROOT TESTNG XML"
+                    echo "=========================================="
+
+                    TESTNG_XML=$(find . \
+                        -maxdepth 1 \
+                        -type f \
+                        -name "testng.xml" \
+                        | head -1)
+
+                    if [ -z "$TESTNG_XML" ]; then
+
+                        echo "ERROR: Root testng.xml not found."
+
+                        exit 1
+
+                    fi
+
+                    echo "Using TestNG XML:"
+                    echo "$TESTNG_XML"
+
+                    echo ""
+                    echo "=========================================="
+                    echo "TESTNG XML CONTENT"
+                    echo "=========================================="
+
+                    cat "$TESTNG_XML"
+
+                    echo ""
+                    echo "=========================================="
+                    echo "VALIDATING TESTNG XML"
+                    echo "=========================================="
+
+                    grep -q "<suite" "$TESTNG_XML" || {
+                        echo "ERROR: <suite> not found."
+                        exit 1
+                    }
+
+                    grep -q "<test" "$TESTNG_XML" || {
+                        echo "ERROR: <test> not found."
+                        exit 1
+                    }
+
+                    grep -q "<classes>" "$TESTNG_XML" || {
+                        echo "ERROR: <classes> not found."
+                        exit 1
+                    }
+
+                    echo "TestNG XML validation successful."
+                '''
+            }
+        }
+
+        stage('Clean Previous Reports') {
+            steps {
+
+                sh '''
+                    echo "=========================================="
+                    echo "CLEANING PREVIOUS REPORTS"
+                    echo "=========================================="
+
+                    rm -rf Reports/ExtentReports
+                    rm -rf Logs
+                    rm -rf target
+                    rm -f browser-list.txt
+
+                    mkdir -p Reports/ExtentReports
+                    mkdir -p Logs
+
+                    echo "Previous reports cleaned."
+                '''
+            }
+        }
+
+        stage('Run UI Tests') {
+            steps {
+
+                script {
+
+                    if (params.EXECUTION_MODE == 'Single Browser') {
+
+                        echo "=========================================="
+                        echo "SINGLE BROWSER EXECUTION"
+                        echo "=========================================="
+
+                        echo "Browser : ${params.BROWSER}"
+                        echo "Tag     : ${params.TAG}"
+                        echo "Headless: ${params.HEADLESS}"
+
+                        sh """
+                            mvn clean test \
+                                -Dcucumber.filter.tags="${params.TAG}" \
+                                -Dbrowser="${params.BROWSER}" \
+                                -Dheadless="${params.HEADLESS}"
+                        """
+
+                    } else {
+
+                        echo "=========================================="
+                        echo "TESTNG XML EXECUTION"
+                        echo "=========================================="
+
+                        sh '''
+                            TESTNG_XML=$(find . \
+                                -maxdepth 1 \
+                                -type f \
+                                -name "testng.xml" \
+                                | head -1)
+
+                            if [ -z "$TESTNG_XML" ]; then
+
+                                echo "ERROR: testng.xml not found."
+
+                                exit 1
+
+                            fi
+
+                            echo "Executing EXACT TestNG XML:"
+                            echo "$TESTNG_XML"
+
+                            echo ""
+                            echo "=========================================="
+                            echo "TESTNG XML"
+                            echo "=========================================="
+
+                            cat "$TESTNG_XML"
+
+                            echo ""
+                            echo "=========================================="
+                            echo "STARTING TESTNG EXECUTION"
+                            echo "=========================================="
+
+                            mvn clean test \
+                                -Dsurefire.suiteXmlFiles="$TESTNG_XML" \
+                                -Dcucumber.filter.tags="${TAG}" \
+                                -Dheadless="${HEADLESS}"
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Prepare Extent Report') {
+            steps {
+
+                sh '''
+                    set -e
+
+                    echo "=========================================="
+                    echo "PREPARING AUTOMATION TEST EXTENT REPORT"
+                    echo "=========================================="
+
+                    REPORT_ROOT="Reports/ExtentReports"
+                    JENKINS_REPORT="$REPORT_ROOT/JenkinsReport"
+
+                    rm -rf "$JENKINS_REPORT"
+
+                    mkdir -p "$JENKINS_REPORT"
+
+                    echo ""
+                    echo "Searching for latest execution folder..."
+
+                    LATEST_EXECUTION=$(find "$REPORT_ROOT" \
+                        -maxdepth 1 \
+                        -type d \
+                        -name "Execution_*" \
+                        | sort \
+                        | tail -1)
+
+                    if [ -z "$LATEST_EXECUTION" ]; then
+
+                        echo "WARNING: No Execution_* folder found."
+
+                        echo "No browser report generated" > browser-list.txt
+
+                        cat > "$JENKINS_REPORT/ExtentReport.html" <<'HTML'
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Automation Test Extent Report</title>
+
+    <style>
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 60px 20px;
+            background-color: #f5f5f5;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .no-report {
+            font-size: 18px;
+            color: #666;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Automation Test Extent Report</h1>
+
+    <div class="no-report">
+        No Extent reports were generated.
+    </div>
+
+</body>
+
+</html>
+HTML
+
+                        exit 0
+                    fi
+
+                    EXECUTION_FOLDER=$(basename "$LATEST_EXECUTION")
+
+                    echo ""
+                    echo "Latest execution folder:"
+                    echo "$EXECUTION_FOLDER"
+
+                    echo ""
+                    echo "=========================================="
+                    echo "SOURCE EXECUTION FOLDER"
+                    echo "=========================================="
+
+                    find "$LATEST_EXECUTION" \
+                        -maxdepth 3 \
+                        -type f \
+                        | sort
+
+                    echo ""
+                    echo "=========================================="
+                    echo "VERIFYING EXTENT REPORT ASSETS"
+                    echo "=========================================="
+
+                    if [ -d "$LATEST_EXECUTION/spark" ]; then
+
+                        echo "Spark folder found:"
+                        echo "$LATEST_EXECUTION/spark"
+
+                    else
+
+                        echo "WARNING: spark folder not found directly inside execution folder."
+
+                    fi
+
+                    echo ""
+                    echo "Searching for Spark CSS..."
+
+                    SPARK_CSS=$(find "$LATEST_EXECUTION" \
+                        -type f \
+                        -name "spark-style.css" \
+                        | head -1)
+
+                    if [ -n "$SPARK_CSS" ]; then
+
+                        echo "Spark CSS found:"
+                        echo "$SPARK_CSS"
+
+                    else
+
+                        echo "WARNING: spark-style.css not found."
+
+                    fi
+
+                    echo ""
+                    echo "Searching for Spark JavaScript..."
+
+                    SPARK_JS=$(find "$LATEST_EXECUTION" \
+                        -type f \
+                        -name "spark-script.js" \
+                        | head -1)
+
+                    if [ -n "$SPARK_JS" ]; then
+
+                        echo "Spark JavaScript found:"
+                        echo "$SPARK_JS"
+
+                    else
+
+                        echo "WARNING: spark-script.js not found."
+
+                    fi
+
+                    echo ""
+                    echo "=========================================="
+                    echo "COPYING COMPLETE EXECUTION FOLDER"
+                    echo "=========================================="
+
+                    cp -R "$LATEST_EXECUTION" \
+                          "$JENKINS_REPORT/$EXECUTION_FOLDER"
+
+                    echo "Execution folder copied to:"
+                    echo "$JENKINS_REPORT/$EXECUTION_FOLDER"
+
+                    echo ""
+                    echo "=========================================="
+                    echo "VERIFYING COPIED EXECUTION FOLDER"
+                    echo "=========================================="
+
+                    COPIED_EXECUTION="$JENKINS_REPORT/$EXECUTION_FOLDER"
+
+                    find "$COPIED_EXECUTION" \
+                        -maxdepth 3 \
+                        -type f \
+                        | sort
+
+                    echo ""
+                    echo "=========================================="
+                    echo "FINDING BROWSER REPORTS"
+                    echo "=========================================="
+
+                    REPORT_COUNT=0
+                    BROWSER_LIST=""
+
+                    for REPORT in "$LATEST_EXECUTION"/*_SparkReport.html
+                    do
+
+                        if [ -f "$REPORT" ]; then
+
+                            REPORT_COUNT=$((REPORT_COUNT + 1))
+
+                            FILE_NAME=$(basename "$REPORT")
+
+                            BROWSER_NAME=$(echo "$FILE_NAME" \
+                                | sed 's/_SparkReport.html//')
+
+                            echo "Found report:"
+                            echo "$FILE_NAME"
+
+                            echo "Published report:"
+                            echo "$COPIED_EXECUTION/$FILE_NAME"
+
+                            if [ -z "$BROWSER_LIST" ]; then
+
+                                BROWSER_LIST="$BROWSER_NAME"
+
+                            else
+
+                                BROWSER_LIST="$BROWSER_LIST, $BROWSER_NAME"
+
+                            fi
+
+                        fi
+
+                    done
+
+                    if [ -z "$BROWSER_LIST" ]; then
+
+                        BROWSER_LIST="No browser report generated"
+
+                    fi
+
+                    echo ""
+                    echo "=========================================="
+                    echo "BROWSERS EXECUTED"
+                    echo "=========================================="
+
+                    echo "$BROWSER_LIST"
+
+                    echo "$BROWSER_LIST" > browser-list.txt
+
+                    echo ""
+                    echo "Total browser reports found:"
+                    echo "$REPORT_COUNT"
+
+                    echo ""
+                    echo "=========================================="
+                    echo "CREATING AUTOMATION TEST EXTENT REPORT"
+                    echo "=========================================="
+
+                    cat > "$JENKINS_REPORT/ExtentReport.html" <<HTML
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Automation Test Extent Report</title>
+
+    <style>
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 60px 20px;
+            background-color: #f5f5f5;
+        }
+
+        h1 {
+            margin-bottom: 15px;
+        }
+
+        .execution {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 35px;
+        }
+
+        #reports {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .report-button {
+            display: inline-block;
+            padding: 14px 30px;
+            text-decoration: none;
+            border-radius: 6px;
+            background: #2d89ef;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .report-button:hover {
+            background: #1b5fa7;
+        }
+
+        .no-report {
+            font-size: 18px;
+            color: #666;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Automation Test Extent Report</h1>
+
+    <div class="execution">
+        Execution: ${EXECUTION_FOLDER}
+    </div>
+
+    <div id="reports">
+
+HTML
+
+                    for REPORT in "$LATEST_EXECUTION"/*_SparkReport.html
+                    do
+
+                        if [ -f "$REPORT" ]; then
+
+                            FILE_NAME=$(basename "$REPORT")
+
+                            BROWSER_NAME=$(echo "$FILE_NAME" \
+                                | sed 's/_SparkReport.html//')
+
+                            cat >> "$JENKINS_REPORT/ExtentReport.html" <<HTML
+
+        <a class="report-button"
+           href="./${EXECUTION_FOLDER}/${FILE_NAME}">
+            ${BROWSER_NAME} Report
+        </a>
+
+HTML
+
+                        fi
+
+                    done
+
+                    if [ "$REPORT_COUNT" -eq 0 ]; then
+
+                        cat >> "$JENKINS_REPORT/ExtentReport.html" <<'HTML'
+
+        <div class="no-report">
+            No Extent reports were generated.
+        </div>
+
+HTML
+
+                    fi
+
+                    cat >> "$JENKINS_REPORT/ExtentReport.html" <<'HTML'
+
+    </div>
+
+</body>
+
+</html>
+HTML
+
+                    echo ""
+                    echo "=========================================="
+                    echo "AUTOMATION TEST EXTENT REPORT CREATED"
+                    echo "=========================================="
+
+                    echo "Dashboard:"
+                    echo "$JENKINS_REPORT/ExtentReport.html"
+
+                    echo ""
+                    echo "=========================================="
+                    echo "CREATING EXTENT REPORT ZIP"
+                    echo "=========================================="
+
+                    cd "$REPORT_ROOT"
+
+                    rm -f ExtentReport.zip
+
+                    zip -r ExtentReport.zip "$EXECUTION_FOLDER" > /dev/null
+
+                    echo ""
+                    echo "ZIP created:"
+                    echo "$REPORT_ROOT/ExtentReport.zip"
+
+                    echo ""
+                    echo "=========================================="
+                    echo "FINAL PUBLISHED REPORT STRUCTURE"
+                    echo "=========================================="
+
+                    find "$JENKINS_REPORT" \
+                        -maxdepth 4 \
+                        -type f \
+                        | sort
+
+                    echo ""
+                    echo "=========================================="
+                    echo "CHECKING BROWSER REPORT LINKS"
+                    echo "=========================================="
+
+                    for REPORT in "$JENKINS_REPORT/$EXECUTION_FOLDER"/*_SparkReport.html
+                    do
+
+                        if [ -f "$REPORT" ]; then
+
+                            echo "OK:"
+                            echo "$REPORT"
+
+                        fi
+
+                    done
+
+                    echo ""
+                    echo "=========================================="
+                    echo "CHECKING SPARK ASSETS IN PUBLISHED REPORT"
+                    echo "=========================================="
+
+                    if [ -f "$JENKINS_REPORT/$EXECUTION_FOLDER/spark/spark-style.css" ]; then
+
+                        echo "OK: spark-style.css"
+
+                    else
+
+                        echo "WARNING: spark-style.css missing"
+
+                    fi
+
+                    if [ -f "$JENKINS_REPORT/$EXECUTION_FOLDER/spark/spark-script.js" ]; then
+
+                        echo "OK: spark-script.js"
+
+                    else
+
+                        echo "WARNING: spark-script.js missing"
+
+                    fi
+
+                    if [ -f "$JENKINS_REPORT/$EXECUTION_FOLDER/spark/font-awesome.min.css" ]; then
+
+                        echo "OK: font-awesome.min.css"
+
+                    else
+
+                        echo "WARNING: font-awesome.min.css missing"
+
+                    fi
+
+                '''
+            }
+        }
+    }
+
+    post {
+
+        always {
+
+            echo "=========================================="
+            echo "PUBLISHING TEST RESULTS"
+            echo "=========================================="
+
+            junit(
+                testResults: '**/target/surefire-reports/*.xml',
+                allowEmptyResults: true
+            )
+
+            publishHTML(
+                target: [
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'Reports/ExtentReports/JenkinsReport',
+                    reportFiles: 'ExtentReport.html',
+                    reportName: 'Automation Test Extent Report',
+                    reportTitles: 'Automation Test Extent Report'
+                ]
+            )
+
+            archiveArtifacts(
+                artifacts: '''
+                    Reports/ExtentReports/ExtentReport.zip,
+                    Reports/ExtentReports/JenkinsReport/ExtentReport.html,
+                    Reports/ExtentReports/Execution_*/**/*,
+                    Logs/**/*,
+                    target/surefire-reports/**/*,
+                    target/rerun-ui.txt
+                ''',
+                allowEmptyArchive: true
+            )
+        }
+
+        success {
+
+            script {
+
+                def browserList = fileExists('browser-list.txt')
+                    ? readFile('browser-list.txt').trim()
+                    : 'Not detected'
+
+                mail(
+                    to: "${params.EMAIL_TO}",
+                    subject: "Automation Test Extent Report - Build #${env.BUILD_NUMBER} - SUCCESS",
+                    body: """
+Hi Team,
+
+Please find the UI automation test execution details below:
+
+Automation Test Extent Report
+
+Project           : HybridFramework_Pipeline
+Build Number      : #${env.BUILD_NUMBER}
+Status             : SUCCESS
+Branch             : ${params.BRANCH}
+Cucumber Tag       : ${params.TAG}
+Execution Mode     : ${params.EXECUTION_MODE}
+Browser            : ${params.BROWSER}
+Browsers Executed  : ${browserList}
+Headless           : ${params.HEADLESS}
+Build Duration     : ${currentBuild.durationString}
+
+---
+
+Automation Test Extent Report:
+
+${env.BUILD_URL}Automation_Test_Extent_Report/
+
+---
+
+Download Complete Extent Report:
+
+${env.BUILD_URL}artifact/ExtentReport.zip
+
+---
+
+Jenkins Build:
+
+${env.BUILD_URL}
+
+---
+
+Please check the Automation Test Extent Report for complete execution details.
+
+Regards,
+Sudip
+"""
+                )
+            }
+        }
+
+        failure {
+
+            script {
+
+                def browserList = fileExists('browser-list.txt')
+                    ? readFile('browser-list.txt').trim()
+                    : 'Not detected'
+
+                mail(
+                    to: "${params.EMAIL_TO}",
+                    subject: "Automation Test Extent Report - Build #${env.BUILD_NUMBER} - FAILED",
+                    body: """
+Hi Team,
+
+Please find the UI automation test execution details below:
+
+Automation Test Extent Report
+
+Project           : HybridFramework_Pipeline
+Build Number      : #${env.BUILD_NUMBER}
+Status             : FAILED
+Branch             : ${params.BRANCH}
+Cucumber Tag       : ${params.TAG}
+Execution Mode     : ${params.EXECUTION_MODE}
+Browser            : ${params.BROWSER}
+Browsers Executed  : ${browserList}
+Headless           : ${params.HEADLESS}
+Build Duration     : ${currentBuild.durationString}
+
+---
+
+Automation Test Extent Report:
+
+${env.BUILD_URL}Automation_Test_Extent_Report/
+
+---
+
+Download Complete Extent Report:
+
+${env.BUILD_URL}artifact/ExtentReport.zip
+
+---
+
+Jenkins Build:
+
+${env.BUILD_URL}
+
+---
+
+Please check the Jenkins console and Automation Test Extent Report for complete execution details.
+
+Regards,
+Sudip
+"""
+                )
+            }
+        }
+
+        unstable {
+
+            script {
+
+                def browserList = fileExists('browser-list.txt')
+                    ? readFile('browser-list.txt').trim()
+                    : 'Not detected'
+
+                mail(
+                    to: "${params.EMAIL_TO}",
+                    subject: "Automation Test Extent Report - Build #${env.BUILD_NUMBER} - UNSTABLE",
+                    body: """
+Hi Team,
+
+Please find the UI automation test execution details below:
+
+Automation Test Extent Report
+
+Project           : HybridFramework_Pipeline
+Build Number      : #${env.BUILD_NUMBER}
+Status             : UNSTABLE
+Branch             : ${params.BRANCH}
+Cucumber Tag       : ${params.TAG}
+Execution Mode     : ${params.EXECUTION_MODE}
+Browser            : ${params.BROWSER}
+Browsers Executed  : ${browserList}
+Headless           : ${params.HEADLESS}
+Build Duration     : ${currentBuild.durationString}
+
+---
+
+Automation Test Extent Report:
+
+${env.BUILD_URL}Automation_Test_Extent_Report/
+
+---
+
+Download Complete Extent Report:
+
+${env.BUILD_URL}artifact/ExtentReport.zip
+
+---
+
+Jenkins Build:
+
+${env.BUILD_URL}
+
+---
+
+Please check the Jenkins console and Automation Test Extent Report for complete execution details.
+
+Regards,
+Sudip
+"""
+                )
+            }
+        }
+    }
+}
+
+------------------------------
+
+Setting--->Script console
+
+1. Restore Extent Report rendering
+
+
+System.setProperty(
+    "hudson.model.DirectoryBrowserSupport.CSP",
+    "default-src 'self' data: blob:; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self' data:;"
+)
+
+
+2. Verify current CSP setting
+
+System.getProperty("hudson.model.DirectoryBrowserSupport.CSP")
+
+If it returns the CSP string from command #1, the configuration is active.

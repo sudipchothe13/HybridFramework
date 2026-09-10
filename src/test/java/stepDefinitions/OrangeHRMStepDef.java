@@ -12,6 +12,7 @@ import CommonLayer.ScreenshotUtils; // <-- updated
 import PageLayer.OrangeHRMDemoPage;
 import UtilsLayer.Log;
 import io.cucumber.java.en.*;
+import junit.framework.Assert;
 
 public class OrangeHRMStepDef {
 
@@ -58,7 +59,8 @@ public class OrangeHRMStepDef {
     @Then("verify user navigates on OrangeHRM Landing page")
     public void verify_user_navigates_on_orange_hrm_landing_page() throws InterruptedException {
 
-        boolean isDashboardVisible = login.isDashboardDisplayed();
+    	Assert.assertEquals(100, 200);       
+    	boolean isDashboardVisible = login.isDashboardDisplayed();
 
         if (isDashboardVisible) {
             ScreenshotUtils.capture(driver, "User successfully navigated to Dashboard");
