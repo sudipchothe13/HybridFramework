@@ -39,7 +39,7 @@ public class UIHooks {
 
         ScreenshotUtils.capture(
                 driver,
-                "🖥️ Browser launched successfully: " + browser.toUpperCase()
+                "Browser launched successfully: " + browser.toUpperCase()
         );
 
         // ===== REQUIRED LOG FORMAT (START) =====
